@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+    {% block content %}
+        <h1>Search CEPs here</h1>
+        <form action="/search" method="get" novalidate>
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.search_term.label }}<br>
+                {{ form.search_term(size=32) }} | 
+                {{ form.community_board.label }}:
+                {{ form.community_board }} | 
+                {{ form.school_districts.label }}:
+                {{ form.school_districts }}
+                {% for error in form.search_term.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>{{ form.submit() }}</p>
+        </form>
+        <div>
+            <h4>Search options</h4>
+
+
+        </div>
+
+    {% endblock %}
+    

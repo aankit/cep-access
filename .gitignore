@@ -1,0 +1,5 @@
+.DS_Store
+*.db
+/venv
+__pycache__
+parse.log
