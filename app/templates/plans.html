@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+    {% block content %}
+        {% if texts %}
+            {% for text in texts %}
+                <li><a href="/static/{{text.plan.year}}/{{text.plan.school.bn}}.html#{{text.page_number}}">{{text.plan.year}}-{{text.plan.school.school_name}}, Page:{{text.page_number}}</a></li>
+            {% endfor %}
+        {% else %}
+            {% for plan in plans %}
+                <li><a href="/static/{{plan.year}}/{{plan.school.bn}}.html">{{plan.year}}-{{plan.school.school_name}}</a></li>
+            {% endfor %}
+        {% endif %}
+    {% endblock %}

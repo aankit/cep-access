@@ -15,8 +15,8 @@ class SearchableMixin(object):
             db.case(when, value=cls.id)), total
 
     @classmethod
-    def filtered_search(cls, expression, filter_ids):
-        ids, total = filtered_query_index(cls.__tablename__, expression, filter_ids)
+    def filtered_search(cls, expression, filter_ids, page, per_page):
+        ids, total = filtered_query_index(cls.__tablename__, expression, filter_ids, page, per_page)
         if total == 0:
             return cls.query.filter_by(id=0), 0
         when = []
@@ -85,4 +85,4 @@ class PlanText(SearchableMixin, db.Model):
     plan_id = db.Column(db.Integer, db.ForeignKey('plan.id'))
     page_number = db.Column(db.Integer)
     text = db.Column(db.Text)
-    __searchable__ = ['text']
+    __searchable__ = ['plan_id', 'text']

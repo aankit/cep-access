@@ -11,18 +11,18 @@ lcgms = pd.read_csv(
 def community_board_naming(num):
     if type(num) is int:
         if num > 500:
-            return "Staten Island CB {}".format(num-500)
+            return num, "Staten Island CB {}".format(num-500)
         elif num > 400:
-            return "Queens CB {}".format(num-400)
+            return num, "Queens CB {}".format(num-400)
         elif num > 300:
-            return "Brooklyn CB {}".format(num-300)
+            return num, "Brooklyn CB {}".format(num-300)
         elif num > 200:
-            return "Bronx CB {}".format(num-200)
+            return num, "Bronx CB {}".format(num-200)
         elif num > 100:
-            return "Manhattan CB {}".format(num-100)
+            return num, "Manhattan CB {}".format(num-100)
         else:
-            return "Missing"
-    return "Not Found"
+            return num, "Missing"
+    return num, "Not Found"
 
 def add_school(db, School, bn):
     school = lcgms.loc[lcgms['Location Code'] == bn]

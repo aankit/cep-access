@@ -1,27 +1,46 @@
 {% extends "base.html" %}
 
     {% block content %}
+
         <h1>Search CEPs here</h1>
-        <form action="/search" method="get" novalidate>
+        <form action="/" method="post" novalidate>
             {{ form.hidden_tag() }}
-            <p>
-                {{ form.search_term.label }}<br>
-                {{ form.search_term(size=32) }} | 
-                {{ form.community_board.label }}:
-                {{ form.community_board }} | 
-                {{ form.school_districts.label }}:
-                {{ form.school_districts }}
+            <div>
+                <div>{{ form.search_term.label }}
+                {{ form.search_term(size=32) }} 
                 {% for error in form.search_term.errors %}
                     <span style="color: red;">[{{ error }}]</span>
                 {% endfor %}
-            </p>
+                </div>
+
+                <h4>Filter options</h4>
+                <div>
+                    {{ form.year.label }}:
+                    {{ form.year }} 
+                    {% for error in form.community_board.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+                <br>
+                <div>
+                    {{ form.community_board.label }}:
+                    {{ form.community_board }} 
+                    {% for error in form.community_board.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+                <br>
+                <div>
+                    {{ form.school_district.label }}:
+                    {{ form.school_district }}
+                    {% for error in form.school_district.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+
+            </div>
             <p>{{ form.submit() }}</p>
         </form>
-        <div>
-            <h4>Search options</h4>
-
-
-        </div>
 
     {% endblock %}
     

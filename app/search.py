@@ -1,4 +1,7 @@
 from app import app
+import pprint
+
+pp = pprint.PrettyPrinter(indent=4)
 
 
 def add_to_index(index, model):
@@ -27,28 +30,51 @@ def query_index(index, query, page, per_page):
     return ids, search['hits']['total']['value']
 
 
-def filtered_query_index(index, query, ids):
+def filtered_query_index(index, terms, plan_ids, page, per_page):
     if not app.elasticsearch:
         return [], 0
+    # filter_body = {'query': { 'bool': { 'must': [{ 'match': { 'text': 'cs4all'}},{'terms': {'plan_id': plan_ids}}]}}}
+    # body = {
+    #     'query': {
+    #         'bool': {
+    #             'must': [],
+    #         }
+    #     },
+    #     'from': (page-1) * per_page,
+    #     'size': per_page
+    # }
     body = {
         'query': {
             'bool': {
-                'must': {
-                    'bool': {
-                        'should': [],
+                'filter': {
+                    'terms': {
+                        'plan_id': plan_ids
                     }
                 },
-                'filter': {
-                    'ids': {
-                        'values': ids
+                'should': [],
+                'minimum_should_match': 1
+            }
+        },
+        'from': (page-1) * per_page,
+        'size': per_page
+    }
+
+    for term in terms:
+        if " " in term:
+            term_dict = {
+                'match_phrase': {
+                    'text': {
+                        'query': term,
+                        'analyzer': 'stop'
                     }
                 }
             }
-        }
-    }
-    for term in query:
-        term_dict = {'match': {'text': term}}
-        body['query']['bool']['must']['bool']['should'].append(term_dict)
+        else:
+            term_dict = {'match': {'text': term}}
+        body['query']['bool']['should'].append(term_dict)
+    # if len(plan_ids) > 0:
+    #     body['query']['bool']['must'].append({'terms': {'plan_id': plan_ids}})
+    pp.pprint(body)
     search = app.elasticsearch.search(index=index, body=body)
     ids = [int(hit['_id']) for hit in search['hits']['hits']]
     return ids, search['hits']['total']['value']
