@@ -58,7 +58,6 @@ def filtered_query_index(index, terms, plan_ids, page, per_page):
         'from': (page-1) * per_page,
         'size': per_page
     }
-
     for term in terms:
         if " " in term:
             term_dict = {
@@ -74,7 +73,6 @@ def filtered_query_index(index, terms, plan_ids, page, per_page):
         body['query']['bool']['should'].append(term_dict)
     # if len(plan_ids) > 0:
     #     body['query']['bool']['must'].append({'terms': {'plan_id': plan_ids}})
-    pp.pprint(body)
     search = app.elasticsearch.search(index=index, body=body)
     ids = [int(hit['_id']) for hit in search['hits']['hits']]
     return ids, search['hits']['total']['value']

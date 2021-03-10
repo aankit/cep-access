@@ -1,13 +1,23 @@
 {% extends "base.html" %}
 
     {% block content %}
+        <p><div><a href="{{url_for('index')}}"><<-Back</a> </div></p>
+        
+        <p>{{"Search Term(s): "+form.search_term.data if form.search_term.data != '-1'}}</p>
+        <p>{{"School Year: "+form.year.data if form.year.data != '-1'}}</p>
+        <p>{{"Community Board: "+form.community_board.data if form.community_board.data != '-1'}}</p>
+        <p>{{"School District: "+form.school_district.data if form.school_district.data != '-1'}}</p>
+        <p>{{"School: "+form.school.data if form.school.data != '-1'}}</p>
         {% if texts %}
             {% for text in texts %}
-                <li><a href="/static/{{text.plan.year}}/{{text.plan.school.bn}}.html#{{text.page_number}}">{{text.plan.year}}-{{text.plan.school.school_name}}, Page:{{text.page_number}}</a></li>
+                <li><a href="/static/{{text.plan.year}}/{{text.plan.school.bn}}.pdf#page={{text.page_number}}">{{text.plan.year}}-{{text.plan.school.school_name}}, Page:{{text.page_number}}</a></li>
             {% endfor %}
+            <p><div><a href="{{url_for('index')}}"><<-Back</a> </div></p>
         {% else %}
             {% for plan in plans %}
-                <li><a href="/static/{{plan.year}}/{{plan.school.bn}}.html">{{plan.year}}-{{plan.school.school_name}}</a></li>
+                <li><a href="/static/{{plan.year}}/{{plan.school.bn}}.pdf">{{plan.year}}-{{plan.school.school_name}}</a></li>
             {% endfor %}
+            <br>
+            <div><a href="{{url_for('index')}}"><<-Back</a> </div>
         {% endif %}
     {% endblock %}

@@ -7,7 +7,7 @@
             {{ form.hidden_tag() }}
             <div>
                 <div>{{ form.search_term.label }}
-                {{ form.search_term(size=32) }} 
+                {{ form.search_term(size=75) }} 
                 {% for error in form.search_term.errors %}
                     <span style="color: red;">[{{ error }}]</span>
                 {% endfor %}
@@ -34,6 +34,14 @@
                     {{ form.school_district.label }}:
                     {{ form.school_district }}
                     {% for error in form.school_district.errors %}
+                        <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </div>
+                <br>
+                <div>
+                    {{ form.school.label }}:
+                    {{ form.school }}
+                    {% for error in form.school.errors %}
                         <span style="color: red;">[{{ error }}]</span>
                     {% endfor %}
                 </div>
