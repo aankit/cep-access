@@ -3,7 +3,7 @@
 *.csv
 *.pyc
 /venv
-/app/__pycache__
+/app/__pycache__/
 __pycache__/
 parse.log
 /app/static/2009-10

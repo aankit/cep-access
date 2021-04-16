@@ -7,4 +7,5 @@ class Config(object):
         'sqlite:///' + os.path.join(basedir, 'app.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     ELASTICSEARCH_URL = os.environ.get('ELASTICSEARCH_URL')
+    NYCENET_URL = "https://www.nycenet.edu/documents/oaosi/cep/"
     PER_PAGE = 50

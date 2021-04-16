@@ -60,6 +60,7 @@ class Plan(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     year = db.Column(db.String(8), index=True)
     school_id = db.Column(db.Integer, db.ForeignKey('school.id'))
+    pdf_link = db.Column(db.String(100))
     text_elements = db.relationship('PlanText', backref='plan', lazy='dynamic')
 
     def __repr__(self):

@@ -2,6 +2,7 @@ from app import app, db
 from flask import render_template, flash, redirect, url_for, request
 from app.forms import SearchForm
 from app.models import School, Plan, PlanText
+from collections import Counter
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -10,6 +11,7 @@ def index():
         page = request.args.get('page', 1, type=int)
         subquery = db.session.query(School)
         texts = None
+        stats = None
         #school filters
         if int(form.school.data) > 0:
             s = int(form.school.data)
@@ -32,15 +34,23 @@ def index():
             st = form.search_term.data.split(",")
             plan_ids = [p.id for p in plans]
             texts, total = PlanText.filtered_search(st, plan_ids, page, app.config['PER_PAGE'])
+        #pull text data for display
+        if texts:
+            stats = dict.fromkeys([p.year for p in plans])
+            for key, value in stats.items():
+                stats[key] = {}
+                stats[key]['school_found'] = texts.join(Plan).join(School).filter(Plan.year==key).distinct(School.bn).count()
+                stats[key]['total_schools'] = plans.filter(Plan.year==key).distinct().count()
+                stats[key]['percent'] = round(float(stats[key]['school_found']/stats[key]['total_schools'])*100, 1)
+            texts = texts.all()
         #plan data for display
         plans = plans.all()
-        if texts:
-            texts = texts.all()
         # return redirect('/')
         return render_template('plans.html', 
             title='Plans', 
             plans=plans, 
-            texts=texts, 
+            texts=texts,
+            stats=stats, 
             form=form)
     return render_template('index.html', title='Home', form=form)
 
