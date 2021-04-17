@@ -4,6 +4,7 @@ from app.forms import SearchForm
 from app.models import School, Plan, PlanText
 from collections import Counter
 
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     form = SearchForm()
@@ -12,53 +13,64 @@ def index():
         subquery = db.session.query(School)
         texts = None
         stats = None
-        #school filters
+        # school filters
         if int(form.school.data) > 0:
             s = int(form.school.data)
-            subquery = subquery.filter(School.id==s)
+            subquery = subquery.filter(School.id == s)
         if int(form.community_board.data) > 0:
             cb = int(form.community_board.data)
-            subquery = subquery.filter(School.community_district==cb)
+            subquery = subquery.filter(School.community_district == cb)
         if int(form.school_district.data) > 0:
             sd = int(form.school_district.data)
-            subquery = subquery.filter(School.school_district==sd)
+            subquery = subquery.filter(School.school_district == sd)
         school_ids = [s.id for s in subquery.all()]
-        #pulling plans
+        # pull plans for filtered schools
         plans = db.session.query(Plan).join(School).filter(
-            Plan.school_id.in_(school_ids), School.school_name!=None).order_by(
+            Plan.school_id.in_(school_ids), School.school_name != None).order_by(
             Plan.year.desc(), School.school_name)
-        #plan filters
+        # plan filters
         if form.year.data != "None":
-            plans = plans.filter(Plan.year==form.year.data)
+            plans = plans.filter(Plan.year == form.year.data)
         if form.search_term.data:
+            # search_term_data = dict.fromkeys([p.year for p in plans])
             st = form.search_term.data.split(",")
             plan_ids = [p.id for p in plans]
-            texts, total = PlanText.filtered_search(st, plan_ids, page, app.config['PER_PAGE'])
+            # we're just going to pull everything all at once...
+            texts, total = PlanText.filtered_search_all(st, plan_ids, page, app.config['PER_PAGE'])
+            # re-route if search results will not be helpful to user
+            if total == 10000:
+                return render_template('search_help.html',
+                                        title='Search Help',
+                                        search_warning="Ten thousand or more results. Try narrowing your search.")
+            if total == 0:
+                return render_template('search_help.html',
+                                        title='Search Help',
+                                        search_warning="No results. Try another term.")
+            
         #pull text data for display
         if texts:
             stats = dict.fromkeys([p.year for p in plans])
             for key, value in stats.items():
                 stats[key] = {}
-                stats[key]['school_found'] = texts.join(Plan).join(School).filter(Plan.year==key).distinct(School.bn).count()
+                stats[key]['matched_schools'] = texts.join(Plan).join(School).filter(Plan.year==key).distinct(School.bn).count()
                 stats[key]['total_schools'] = plans.filter(Plan.year==key).distinct().count()
-                stats[key]['percent'] = round(float(stats[key]['school_found']/stats[key]['total_schools'])*100, 1)
+                stats[key]['percent'] = round(float(stats[key]['matched_schools']/stats[key]['total_schools'])*100, 1)
             texts = texts.all()
-        #plan data for display
+        # plan data for display
         plans = plans.all()
-        # return redirect('/')
-        return render_template('plans.html', 
-            title='Plans', 
-            plans=plans, 
-            texts=texts,
-            stats=stats, 
-            form=form)
+        return render_template('plans.html',
+                               title='Plans',
+                               plans=plans,
+                               texts=texts,
+                               stats=stats,
+                               form=form)
     return render_template('index.html', title='Home', form=form)
 
 # @app.route('/search', methods=['GET, POST'])
 # def search():
-#     return 
+#     return
+
 
 @app.route('/about')
 def about():
     return render_template('about.html')
-

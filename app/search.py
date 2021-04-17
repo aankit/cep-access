@@ -76,3 +76,33 @@ def filtered_query_index(index, terms, plan_ids, page, per_page):
     search = app.elasticsearch.search(index=index, body=body)
     ids = [int(hit['_id']) for hit in search['hits']['hits']]
     return ids, search['hits']['total']['value']
+
+def filtered_query_count(index, terms, plan_ids):
+    body = {
+        'query': {
+            'bool': {
+                'filter': {
+                    'terms': {
+                        'plan_id': plan_ids
+                    }
+                },
+                'should': [],
+                'minimum_should_match': 1
+            }
+        }
+    }
+    for term in terms:
+        if " " in term:
+            term_dict = {
+                'match_phrase': {
+                    'text': {
+                        'query': term,
+                        'analyzer': 'stop'
+                    }
+                }
+            }
+        else:
+            term_dict = {'match': {'text': term}}
+        body['query']['bool']['should'].append(term_dict)
+    count = app.elasticsearch.count(index=index, body=body)
+    return count

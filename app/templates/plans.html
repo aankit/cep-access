@@ -14,10 +14,10 @@
             <ul>
                 <p>Number of Schools using Term(s) vs Total Number of School Plans</p>
                 {% for key, value in stats.items() %}
-                    <li>{{ key }}: {{ value['school_found']}} in {{value['total_schools'] }} - {{value['percent']}}%</li>
+                    <li>{{ key }}: {{ value['matched_schools']}} in {{value['total_schools'] }} - {{value['percent']}}%</li>
                 {% endfor %}
             </ul>
-           <h4>Top 50 Search Results: (pagination to see more results in the works!)</h4>
+           <h4>Top 50 Search Results:</h4>
             <ul>
             
             {% for text in texts %}

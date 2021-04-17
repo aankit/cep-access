@@ -1,6 +1,6 @@
 from app import db
-from app.search import add_to_index, remove_from_index, query_index, filtered_query_index
-
+from app.search import add_to_index, remove_from_index, query_index, filtered_query_index, filtered_query_count
+import math
 
 class SearchableMixin(object):
     @classmethod
@@ -23,6 +23,27 @@ class SearchableMixin(object):
         for i in range(len(ids)):
             when.append((ids[i], i))
         return cls.query.filter(cls.id.in_(ids)).order_by(
+            db.case(when, value=cls.id)), total
+
+    @classmethod
+    def filtered_search_all(cls, expression, filter_ids, page, per_page):
+        all_ids = []
+        ids, total = filtered_query_index(cls.__tablename__, expression, filter_ids, page, per_page)
+        if total == 0:
+            return cls.query.filter_by(id=0), 0
+        if total == 10000:
+            return cls.query.filter_by(id=0), 10000
+        all_ids.extend(ids)
+        remaining = total - (page*per_page)
+        while remaining > 0:
+            page += 1
+            ids, total = filtered_query_index(cls.__tablename__, expression, filter_ids, page, per_page)
+            all_ids.extend(ids)
+            remaining = total - (page*per_page)
+        when = []
+        for i in range(len(all_ids)):
+            when.append((all_ids[i], i))
+        return cls.query.filter(cls.id.in_(all_ids)).order_by(
             db.case(when, value=cls.id)), total
 
     @classmethod
