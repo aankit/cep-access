@@ -9,3 +9,4 @@ class Config(object):
     ELASTICSEARCH_URL = os.environ.get('ELASTICSEARCH_URL')
     NYCENET_URL = "https://www.nycenet.edu/documents/oaosi/cep/"
     PER_PAGE = 50
+    SPACE_URL = "https://ceps.nyc3.digitaloceanspaces.com"

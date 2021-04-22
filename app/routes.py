@@ -60,6 +60,7 @@ def index():
         plans = plans.all()
         return render_template('plans.html',
                                title='Plans',
+                               space=app.config['SPACE_URL'],
                                plans=plans,
                                texts=texts,
                                stats=stats,
