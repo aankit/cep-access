@@ -8,22 +8,22 @@ from app.utils import community_board_naming
 
 years = [(y[0], y[0]) for y in db.session.query(Plan.year).distinct().order_by(
     Plan.year.desc())]
-years.insert(0, ("None", "Choose from List"))
+years.insert(0, ("None", "All"))
 
 community_board_numbers = [cd[0] for cd in db.session.query(
     School.community_district).distinct() if type(cd[0]) is int]
 community_board_names = list(
     map(community_board_naming, community_board_numbers))
 community_board_names.sort(key=lambda tup: tup[1])
-community_board_names.insert(0, (-1, "Choose from list"))
+community_board_names.insert(0, (-1, "All"))
 
 school_districts = [(sd[0], sd[0]) for sd in db.session.query(
     School.school_district).distinct() if type(sd[0]) is int]
-school_districts.insert(0, (-1, "Choose from list"))
+school_districts.insert(0, (-1, "All"))
 
 schools = [(s.id, s.school_name) for s in db.session.query(School) if s.school_name is not None ]
 schools.sort(key=lambda tup: tup[1])
-schools.insert(0, (-1, "Choose from list"))
+schools.insert(0, (-1, "All"))
 
 class SearchForm(FlaskForm):
     search_term = StringField('Search Term')
