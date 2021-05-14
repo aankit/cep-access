@@ -36,27 +36,30 @@ def index():
             st = form.search_term.data.split(",")
             plan_ids = [p.id for p in plans]
             # we're just going to pull everything all at once...
-            texts, total = PlanText.filtered_search_all(st, plan_ids, page, app.config['PER_PAGE'])
+            texts, total = PlanText.filtered_search_all(
+                st, plan_ids, page, app.config['PER_PAGE'])
             # re-route if search results will not be helpful to user
             if total == 10000:
                 return render_template('search_help.html',
-                                        title='Search Help',
-                                        search_warning="Ten thousand or more results. Try narrowing your search.")
+                                       title='Search Help',
+                                       search_warning="Ten thousand or more results. Try narrowing your search.")
             if total == 0:
                 return render_template('search_help.html',
-                                        title='Search Help',
-                                        search_warning="No results. Try another term.")
-            
-        #pull text data for display
+                                       title='Search Help',
+                                       search_warning="No results. Try another term.")
+
+        # pull text data for display
         if texts:
             stats = dict.fromkeys([p.year for p in plans])
             for key, value in stats.items():
                 stats[key] = {}
                 tsq = texts.group_by(PlanText.plan_id).subquery()
-                
-                stats[key]['matched_schools'] = Plan.query.join(tsq, Plan.id==tsq.c.plan_id).count()
-                stats[key]['total_schools'] = plans.filter(Plan.year==key).distinct(School.bn).count()
-                stats[key]['percent'] = round(float(stats[key]['matched_schools']/stats[key]['total_schools'])*100, 1)
+                stats[key]['matched_schools'] = Plan.query.join(
+                    tsq, Plan.id == tsq.c.plan_id).filter(Plan.year == key).count()
+                stats[key]['total_schools'] = plans.filter(
+                    Plan.year == key).distinct(School.bn).count()
+                stats[key]['percent'] = round(
+                    float(stats[key]['matched_schools']/stats[key]['total_schools'])*100, 1)
             texts = texts.all()
         # plan data for display
         plans = plans.all()
