@@ -52,8 +52,10 @@ def index():
             stats = dict.fromkeys([p.year for p in plans])
             for key, value in stats.items():
                 stats[key] = {}
-                stats[key]['matched_schools'] = texts.join(Plan).join(School).filter(Plan.year==key).distinct(School.bn).count()
-                stats[key]['total_schools'] = plans.filter(Plan.year==key).distinct().count()
+                tsq = texts.group_by(PlanText.plan_id).subquery()
+                
+                stats[key]['matched_schools'] = Plan.query.join(tsq, Plan.id==tsq.c.plan_id).count()
+                stats[key]['total_schools'] = plans.filter(Plan.year==key).distinct(School.bn).count()
                 stats[key]['percent'] = round(float(stats[key]['matched_schools']/stats[key]['total_schools'])*100, 1)
             texts = texts.all()
         # plan data for display
